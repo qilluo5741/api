@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper中定义的是mybatis对某些业务的sql语句 -->
+<mapper namespace="com.sharebo.mapper.CarInfoMapper">
+	<cache readOnly="true" size="500" flushInterval="120000" eviction="LRU"/>
+	<!-- 添加车牌信息 -->
+	<insert id="addCarInfo" parameterType="com.sharebo.entity.CarInfo">
+		insert into carinfo(carId,carNo,createtime,userId,isDefault,carNickName,isdelete) values(UUID_SHORT(),#{carNo},now(),#{userId},#{isDefault},#{carNickName},0)
+	</insert>
+	<!-- 验证用户下该车牌是否已经存在 -->
+	<select id="selectCarNoByUserId" resultType="int">
+		SELECT count(1) FROM carinfo where carNo=#{carNo} and userId=#{userId}
+	</select>
+	<!-- 根据userid修改车牌 -->
+	<update id="updateCarNoByUserId" parameterType="com.sharebo.entity.CarInfo">
+		update carinfo set carNo=#{carNo} WHERE userId=#{userId} and isDelete=0
+	</update>
+	<!--根据userid,车牌删除 -->
+	<update id="delectCarNoByUserId" parameterType="com.sharebo.entity.CarInfo">
+		update carinfo set isDelete=1 WHERE  carNo=#{carNo} and userId=#{userId}
+	</update>
+	<!-- 设置默认车牌号，根据用户号 -->
+	<update id="updateIsDefaultByUserId" parameterType="com.sharebo.entity.CarInfo">
+		update carinfo set isDefault=#{isDefault} WHERE carNo=#{carNo} and userid=#{userId} and isDelete=0
+	</update>
+	<!-- 重置用户下该车牌是否默认 -->
+	<update id="updateResetIsDefaultByUserId" parameterType="com.sharebo.entity.CarInfo">
+		update carinfo set isDefault=0 where userid=#{userId}
+	</update>
+</mapper>

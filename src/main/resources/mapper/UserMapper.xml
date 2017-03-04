@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper中定义的是mybatis对某些业务的sql语句 -->
+<mapper namespace="com.sharebo.mapper.UserMapper">
+	<cache readOnly="true" size="500" flushInterval="120000" eviction="LRU"/>
+	<!-- 添加个人信息 -->
+	<insert id="addUserinfo" parameterType="com.sharebo.entity.User">
+		insert into user(userId,password,phoneNumber,wechatId,sex,city,province,nickName,headimgurl,subscribe_time,useCounts,create_time,isDelete) VALUES(UUID_SHORT(),#{password},#{phoneNumber},#{wechatId},#{sex},#{city},#{province},#{nickName},#{headimgurl},NOW(),0,NOW(),0)
+	</insert>
+	<!-- 验证用户是否已经存在 -->
+	<select id="selectCountByWechatid" resultType="string">
+		SELECT userId FROM `user` where wechatId=#{wechatId}
+	</select>
+	<!-- 根据wechatId修改用户信息 -->
+	<update id="updateUserInfoByUserid" parameterType="com.sharebo.entity.User">
+		update `user` set password=#{password},phoneNumber=#{phoneNumber},sex=#{sex},city=#{city},province=#{province},nickName=#{nickName},headimgurl=#{headimgurl},subscribe_time=now() where wechatId=#{wechatId}
+	</update>
+	<!-- 根据userid查询个人信息 -->
+	<select id="selectUserByUserId" resultType="com.sharebo.entity.User" useCache="false">
+		SELECT userId,phoneNumber,wechatId,sex,city,province,nickName,headimgurl,subscribe_time,useCounts FROM `user` where userId=#{userId} and isDelete=0
+	</select>
+	<!-- 根据userid删除 -->
+	<update id="deleteUserByUserId" parameterType="com.sharebo.entity.User">
+		update `user` set isDelete=1 WHERE userId=#{userId}
+	</update>
+	<!-- 根据 微信唯一标识号，userid修改手机号码 -->
+	<update id="updatePhoneNumberByWechatIdOrUserId" parameterType="com.sharebo.entity.User">
+		update user SET phoneNumber=#{phoneNumber} where wechatId=#{wechatId} and userId=#{userId}
+	</update>
+	<!--根据用户号查询手机号和默认车牌号 -->
+	<select id="selectPhoneNumberIsCarNoByUserId" resultType="com.sharebo.entityDto.UserCarinfoDto" useCache="false">
+		SELECT u.userId,u.phoneNumber,c.carNo from user u,carinfo c where c.userid=c.userid and u.userId=#{userId} and c.isDefault=1
+	</select>
+</mapper>

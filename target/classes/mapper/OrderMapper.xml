@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper中定义的是mybatis对某些业务的sql语句 -->
+<mapper namespace="com.sharebo.mapper.OrderMapper">
+	<cache readOnly="true" size="500" flushInterval="120000" eviction="LRU"/>
+	<!-- 查询 -->
+	<select id="judgeIsOrderCar" resultType="Integer">
+		select count(1) from orderlist where carNo like #{carNo} and parkId=#{parkId} and status = "ORDERED"
+	</select>
+	
+	<select id="getcarNosByParkAndStatus" resultType="com.sharebo.entity.MatchLicensePlateInfo">
+		select orderId,carNo from orderlist where parkId=#{parkId} and status = #{status};
+	</select>
+	
+	<select id="findOrderById" resultType="com.sharebo.entity.Order">
+		select * from orderlist where orderId = #{orderId}
+	</select>
+	
+	<select id="findOrderByCar" resultType="com.sharebo.entity.Order">
+		select * from orderlist where carNo = #{carNo} and parkId=#{parkId} and status = #{status}
+	</select>
+	
+	<update id="saveOrder" parameterType="com.sharebo.entity.Order">
+		update orderlist set userId=#{userId},parkId=#{parkId},carNo=#{carNo},phone=#{phone}
+		,status=#{status},couponNumber=#{couponNumber},fee=#{fee},createTime=#{createTime}
+		,beginTime=#{beginTime},endTime=#{endTime},payTime=#{payTime},orderTime=#{orderTime}
+		 where orderId=#{orderId}
+	</update>
+	
+	<insert id="createOrder" parameterType="com.sharebo.entity.Order">
+		insert into orderlist (orderId,userId,parkId,carNo,phone,status,couponNumber,fee,createTime
+		,beginTime,endTime,payTime,orderTime) values (UUID_SHORT(),#{userId},#{parkId},#{carNo},#{phone}
+		,"ORDERED",#{couponNumber},#{fee},now(),#{beginTime},#{endTime},#{payTime},#{orderTime})
+	</insert>
+	
+	<select id="isExistWatiPay" resultType="Integer">
+		select count(1) from orderlist where userId = #{userId} and status = "WAIT_PAY"
+	</select>
+	
+	<select id="isOrderedByCarNo" resultType="Integer">
+		select count(1) from orderlist where userId = #{userId} and carNo = #{carNo} and parkId=#{parkId}
+		 and (status = "WAIT_PAY" or status = "ORDERED" or status = "ENTERED")
+	</select>
+	
+	<select id="findOrdersByNowUser" resultType="com.sharebo.entity.Order">
+		select * from orderlist where userId = #{userId}
+	</select>
+	
+	<select id="findOrdersWithUnCom" resultType="com.sharebo.entity.Order">
+		select * from orderlist where userId = #{userId} and (status = "WAIT_PAY" or status = "ORDERED" or status = "ENTERED")
+	</select>
+	
+	<select id="findOrdersWithCom" resultType="com.sharebo.entity.Order">
+		select * from orderlist where userId = #{userId} and (status = "CANCLED" or status = "PAYED" or status = "OVER_DUE")
+	</select>
+</mapper>

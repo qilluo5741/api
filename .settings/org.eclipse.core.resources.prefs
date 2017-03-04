@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/sharebo/controller=UTF-8
+encoding//src/main/java/com/sharebo/controller/AuthController.java=UTF-8
+encoding//src/main/java/com/sharebo/controller/TestController.java=UTF-8
+encoding//src/main/java/com/sharebo/entity/ResultInfo.java=UTF-8
+encoding//src/main/java/com/sharebo/filter/XssHttpServletRequestWraper.java=UTF-8
+encoding//src/main/java/com/sharebo/interceptor/AuthInterceptor.java=UTF-8
+encoding//src/main/java/com/sharebo/mapper/UserMapper.java=UTF-8
+encoding//src/main/java/com/sharebo/service/UserService.java=UTF-8
+encoding//src/main/java/com/sharebo/util/security/RSA.java=UTF-8
